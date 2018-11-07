@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 # %matplotlib inline
 import numpy as np
+from sklearn.model_selection import train_test_split
 
 from data_processing import *
 
@@ -22,6 +23,12 @@ def load_sessions(agg=False):
 		return sessions_agg
 
 	return sessions_df
+
+
+def split_data(train_users):
+    train_users = train_users.sort_values(by='date_account_created')
+    new_train, new_test = train_test_split(train_users, test_size=0.3, shuffle=False)
+    return new_train, new_test
 
 
 # countries = pd.read_csv(DATA_PATH + 'countries.csv')
