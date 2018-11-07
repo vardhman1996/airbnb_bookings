@@ -29,6 +29,15 @@ def get_day(date):
 def drop_data_columns(df):
     return df.drop(columns=drop_columns)
 
+def agg_sessions(sess_df):
+    return sess_df.groupby('user_id', as_index=False)['secs_elapsed'].sum()
+
+def merge_df(left_df, right_df, left_column, right_column, how='inner'):
+    result = pd.merge(left_df, right_df, left_on=left_column, right_on=right_column, how=how)
+    result = result.drop(columns=right_column)
+    return result
+
+
 def extract_date_features(df, column_name):
     df[column_name + '_year'] = df[column_name].apply(get_year)
     df[column_name + '_month'] = df[column_name].apply(get_month)
@@ -37,6 +46,16 @@ def extract_date_features(df, column_name):
     df[column_name + '_year'].fillna(0, inplace=True)
     df[column_name + '_month'].fillna(0, inplace=True)
     df[column_name + '_day'].fillna(0, inplace=True)
+
+
+def process_session_sec(df, column_name, prefix):
+    new_column_name = prefix + column_name
+    df[new_column_name] = df[column_name]
+    df_median = df[new_column_name].median()
+
+    print("seconds_median: {}".format(df_median))
+    df[new_column_name].fillna(df_median, inplace=True)
+    assert(df[new_column_name].isna().sum()==0)
 
 def process_age(df, column_name, prefix):
     new_column_name = prefix + column_name
