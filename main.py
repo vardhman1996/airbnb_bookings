@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from data_processing import *
 
 DATA_PATH = './data/'
-
+METADATA_PATH = './metadata/'
 
 def load_data():
 	train_users = pd.read_csv(DATA_PATH + 'train_users_2.csv')
@@ -27,7 +27,7 @@ def load_sessions(agg=False):
 
 def split_data(train_users):
     train_users = train_users.sort_values(by='date_account_created')
-    new_train, new_test = train_test_split(train_users, test_size=0.3, shuffle=False)
+    new_train, new_test = train_test_split(train_users, test_size=0.3, shuffle=True, random_state=0)
     return new_train, new_test
 
 
@@ -39,7 +39,11 @@ def split_data(train_users):
 train_users_df = load_data()
 sessions_agg = load_sessions(agg=True)
 
-# print(train_users_df.info())
-# print(sessions_agg.info())
-merged_result = merge_df(train_users_df, sessions_agg, left_column='id', right_column='user_id', how='left')
-process_session_sec(merged_result, 'secs_elapsed', 'processed_')
+merged_dataset_df = merge_df(train_users_df, sessions_agg, left_column='id', right_column='user_id', how='left')
+
+train_df, test_df = split_data(merged_dataset_df)
+
+xtrain, ytrain = preprocess_df(train_df, train=True)
+xtest, ytest = preprocess_df(test_df, train=False)
+print(xtest.shape)
+print(ytest.shape)

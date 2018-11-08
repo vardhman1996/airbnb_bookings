@@ -1,5 +1,5 @@
 
-drop_columns = [
+DROP_COLUMNS = [
     'id', 
     'date_account_created',
     'timestamp_first_active',
@@ -15,5 +15,13 @@ drop_columns = [
     'signup_app',
     'first_device_type', 
     'first_browser',
-    'country_destination'
+    'country_destination',
+    'secs_elapsed'
 ]
+
+LABEL_COLUMN = 'label_country_destination'
+
+DATA_PATH = './data/'
+METADATA_PATH = './metadata/metadata.pkl'
+
+DEBUG = False
