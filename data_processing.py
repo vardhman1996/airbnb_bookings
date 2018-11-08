@@ -77,10 +77,13 @@ def process_age(df, column_name, prefix, median_age=None):
     return median_age
 
 
-def process_labels(df, column_name, prefix):
+def process_labels_binary(df, column_name, prefix):
     new_column_name = prefix  + column_name
     df[new_column_name] = (df[column_name] != 'NDF').astype(int)
 
+def process_labels_category(df, column_name, prefix):
+    new_column_name = prefix  + column_name
+    df[new_column_name] = df[column_name].astype('category').cat.codes
 
 def save_metadata(median_sec, median_age, df_feature_columns):
     meta_data = {}
@@ -115,15 +118,15 @@ def preprocess_df(df, train=True):
 
     # print("Median age {} Median sec {}".format(median_age, median_sec))
 
-    process_labels(df, 'country_destination', 'label_')
+    process_labels_category(df, 'country_destination', 'label_')
     
     median_sec = process_session_sec(df, 'secs_elapsed', 'processed_', median_sec=median_sec)
     median_age = process_age(df, 'age', 'processed_', median_age=median_age)
 
     to_categorical(df, 'signup_flow', 'processed_')
-    to_categorical(df, 'first_browser', 'processed_')
+    to_categorical(df, 'first_browser', 'processed_')d
     to_dummy(df, 'gender', 'gender')
-    to_dummy(df, 'first_device_type', 'first_device_type')
+    to_dummy(df, 'first_device_type', 'first_device_td')
     to_dummy(df, 'signup_app', 'signup_type')
     to_dummy(df, 'signup_method', 'signup_method')
     to_dummy(df, 'language', 'language_used')
@@ -139,11 +142,11 @@ def preprocess_df(df, train=True):
 
     
     # for test df_feature columns should be read from a file
-    if DEBUG:
-        print("NUM COLUMNS: {}".format(df.columns.values.shape))
-        print("Test Columns {}".format(df.columns))
-        df_debug = df[df_feature_columns]
-        print("Final columns {}".format(df_debug.columns))
+    # if DEBUG:
+    #     print("NUM COLUMNS: {}".format(df.columns.values.shape))
+    #     print("Test Columns {}".format(df.columns))
+    #     df_debug = df[df_feature_columns]
+    #     print("Final columns {}".format(df_debug.columns))
     
     
     x_features = df[df_feature_columns].values

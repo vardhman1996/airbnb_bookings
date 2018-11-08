@@ -1,4 +1,3 @@
-
 DROP_COLUMNS = [
     'id', 
     'date_account_created',

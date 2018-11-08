@@ -5,6 +5,7 @@ import seaborn as sns
 # %matplotlib inline
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
 
 from data_processing import *
 
@@ -45,5 +46,15 @@ train_df, test_df = split_data(merged_dataset_df)
 
 xtrain, ytrain = preprocess_df(train_df, train=True)
 xtest, ytest = preprocess_df(test_df, train=False)
-print(xtest.shape)
-print(ytest.shape)
+
+# print(ytrain[:100])
+print(xtrain[1])
+clf = LogisticRegression(penalty='l2', solver='lbfgs', multi_class='multinomial', class_weight='balanced').fit(xtrain, ytrain)
+
+ypred = clf.predict(xtest)
+print(ytest[:1000])
+print(ypred[:1000])
+
+
+acc = clf.score(xtrain, ytrain)
+print(acc)
