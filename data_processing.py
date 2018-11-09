@@ -124,7 +124,7 @@ def preprocess_df(df, train=True):
     median_age = process_age(df, 'age', 'processed_', median_age=median_age)
 
     to_categorical(df, 'signup_flow', 'processed_')
-    to_categorical(df, 'first_browser', 'processed_')d
+    to_categorical(df, 'first_browser', 'processed_')
     to_dummy(df, 'gender', 'gender')
     to_dummy(df, 'first_device_type', 'first_device_td')
     to_dummy(df, 'signup_app', 'signup_type')
