@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import pickle as pkl
+import matplotlib.pyplot as plt
+from sklearn.feature_selection import chi2
 
 from settings import *
 
@@ -76,14 +78,13 @@ def process_age(df, column_name, prefix, median_age=None):
 
     return median_age
 
-
 def process_labels_binary(df, column_name, prefix):
     new_column_name = prefix  + column_name
     df[new_column_name] = (df[column_name] != 'NDF').astype(int)
 
 def process_labels_category(df, column_name, prefix):
     new_column_name = prefix  + column_name
-    df[new_column_name] = df[column_name].astype('category').cat.codes
+    df[new_column_name] = df[column_name].apply(lambda x: LABEL_MAPPING[x])
 
 def save_metadata(median_sec, median_age, df_feature_columns):
     meta_data = {}
@@ -100,6 +101,7 @@ def load_metadata():
         meta_data = pkl.load(file)
 
     return meta_data
+
 
 def preprocess_df(df, train=True):
     # check validity in test set?
@@ -124,7 +126,7 @@ def preprocess_df(df, train=True):
     median_age = process_age(df, 'age', 'processed_', median_age=median_age)
 
     to_categorical(df, 'signup_flow', 'processed_')
-    to_categorical(df, 'first_browser', 'processed_')d
+    to_categorical(df, 'first_browser', 'processed_')
     to_dummy(df, 'gender', 'gender')
     to_dummy(df, 'first_device_type', 'first_device_td')
     to_dummy(df, 'signup_app', 'signup_type')
@@ -147,7 +149,6 @@ def preprocess_df(df, train=True):
     #     print("Test Columns {}".format(df.columns))
     #     df_debug = df[df_feature_columns]
     #     print("Final columns {}".format(df_debug.columns))
-    
     
     x_features = df[df_feature_columns].values
     y_labels = df[[LABEL_COLUMN]].values

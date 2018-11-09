@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
 from data_processing import *
+from statistics import *
 
 DATA_PATH = './data/'
 METADATA_PATH = './metadata/'
@@ -44,17 +45,27 @@ merged_dataset_df = merge_df(train_users_df, sessions_agg, left_column='id', rig
 
 train_df, test_df = split_data(merged_dataset_df)
 
-xtrain, ytrain = preprocess_df(train_df, train=True)
-xtest, ytest = preprocess_df(test_df, train=False)
+# xtrain, ytrain = preprocess_df(train_df, train=True)
+# xtest, ytest = preprocess_df(test_df, train=False)
+
+
+calc_stats(train_df)
 
 # print(ytrain[:100])
-print(xtrain[1])
-clf = LogisticRegression(penalty='l2', solver='lbfgs', multi_class='multinomial', class_weight='balanced').fit(xtrain, ytrain)
+# clf = LogisticRegression(penalty='l2', solver='lbfgs', multi_class='multinomial').fit(xtrain, ytrain)
 
-ypred = clf.predict(xtest)
-print(ytest[:1000])
-print(ypred[:1000])
+# ypred = clf.predict(xtest)
 
+# print(np.bincount(ytest))
+# print(np.bincount(ypred))
 
-acc = clf.score(xtrain, ytrain)
-print(acc)
+# acc_test = clf.score(xtest, ytest)
+# print("test ", acc_test)
+
+# ypred = clf.predict(xtrain)
+
+# print(np.bincount(ytrain))
+# print(np.bincount(ypred))
+
+# acc_train = clf.score(xtrain, ytrain)
+# print("train ", acc_train)
