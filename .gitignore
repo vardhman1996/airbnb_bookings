@@ -9,6 +9,7 @@ metadata/
 graphs/
 processed_data/
 metrics/
+classification_report/
 # C extensions
 *.so
 

@@ -61,7 +61,7 @@ LABEL_MAPPING = {
      'other' : 11 
 }
 
-SAMPLING_METHOD = 'over_sample'
+SAMPLING_METHOD = 'no_transform'
 
 SAMPLING_MAPPING = {
     'no_transform': get_simple_data,
@@ -80,5 +80,6 @@ GRAPHS = 'graphs/'
 STACK_PLOTS = 'graphs/stack_plots/'
 METRICS = 'metrics/'
 PROCESSED_DATA = 'processed_data/data.pkl'
+CLASSIFICATION_REPORT = 'classification_report/'
 
 DEBUG = False

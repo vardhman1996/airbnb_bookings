@@ -3,7 +3,7 @@ from datetime import date
 import numpy as np
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, VotingClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, VotingClassifier, BaggingClassifier, AdaBoostClassifier, ExtraTreesClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
@@ -14,7 +14,7 @@ from class_imbalance import *
 from data_loader import get_data
 from plot_graphs import *
 
-def evaluate_model(ypred, ytest, name):
+def evaluate_model(ypred, ytest, filename):
     print(np.bincount(ytest))
     print(np.bincount(ypred))
 
@@ -28,8 +28,11 @@ def evaluate_model(ypred, ytest, name):
     classification_report = metrics.classification_report(ytest, ypred, target_names=labels)
     print("Accuracy: {}".format(accuracy_test))
     print("Confusion matrix")
-    plot_confusion_matrix(confusion_matrix, labels, os.path.join(METRICS, "{}_cm.png".format(name)))
+    plot_confusion_matrix(confusion_matrix, labels, os.path.join(METRICS, "{}_cm.png".format(filename)))
     print("f1 score {}".format(f1_score))
+
+    with open(os.path.join(CLASSIFICATION_REPORT, "{}.txt".format(filename)), 'w') as txtfile:
+        txtfile.write(classification_report)
     print(classification_report)
 
 def train_models(classifiers, xtrain, ytrain, xtest, ytest, transform=None):
@@ -42,8 +45,7 @@ def train_models(classifiers, xtrain, ytrain, xtest, ytest, transform=None):
         print("Running {} classifier...".format(name))
         classifier.fit(xtrain_resampled, ytrain_resampled)
         ypred = classifier.predict(xtest)
-
-        filename = '{}_{}'.format(name, transform)
+        filename = '{}/{}'.format(transform, name)
         evaluate_model(ypred, ytest, filename)
 
 def get_classifiers():
@@ -51,23 +53,34 @@ def get_classifiers():
     random_forest = RandomForestClassifier(n_estimators=100, random_state=1, verbose=1, n_jobs=-1)
     gaussian_nb = GaussianNB()
     gradient_boosting = GradientBoostingClassifier(max_features='auto', verbose=True)
-    svc = SVC(kernel='rbf')
+    # svc = SVC(kernel='rbf')
     votingclf = VotingClassifier(estimators=[('lr', logistic), ('rf', random_forest), ('gnb', gaussian_nb), ('gb', gradient_boosting)], voting='hard', n_jobs=-1)
-    
-    # print("size: {}".format(size))
-    mlp = MLPClassifier((500, 250), max_iter=10, learning_rate='adaptive', verbose=True, validation_fraction=0.1)
+    mlp = MLPClassifier((256, 512, 1024, 512, 256), max_iter=100, learning_rate='adaptive', verbose=True, validation_fraction=0.1)
+    bagging_classifier = BaggingClassifier(n_jobs=-1, verbose=1)
+    adaboost = AdaBoostClassifier(random_state=1)
+    extraTree = ExtraTreesClassifier(n_jobs=-1, class_weight='balanced', verbose=1)
 
-    # RUNNING ON ATTU
-    # classifiers = [('gradient_boosting', gradient_boosting), ('Gaussian nb', gaussian_nb), ('Random forest', random_forest), ('Voting', votingclf)]
-
-    classifiers = [('MLP', mlp)]
+    classifiers = [ 
+                    ('logistic', logistic),
+                    ('gradient_boosting', gradient_boosting), 
+                    ('gaussian nb', gaussian_nb), 
+                    ('random_forest', random_forest),
+                    ('bagging', bagging_classifier),
+                    ('adaboost', adaboost), 
+                    ('extra_tree', extraTree),
+                    ('voting', votingclf),
+                    ('MLP', mlp)
+                ]
     return classifiers
 
 if __name__ == "__main__":
     xtrain, ytrain, xtest, ytest = get_data()
-
     print("Using sampling technique: {}".format(SAMPLING_METHOD))
     xtrain_resampled, ytrain_resampled = SAMPLING_MAPPING[SAMPLING_METHOD](xtrain, ytrain)
     classifiers = get_classifiers()
 
+    if not os.path.exists(os.path.join(METRICS, SAMPLING_METHOD)):
+        os.makedirs(os.path.join(METRICS, SAMPLING_METHOD))
+    if not os.path.exists(os.path.join(CLASSIFICATION_REPORT, SAMPLING_METHOD)):
+        os.makedirs(os.path.join(CLASSIFICATION_REPORT, SAMPLING_METHOD))
     train_models(classifiers, xtrain_resampled, ytrain_resampled, xtest, ytest, transform=SAMPLING_METHOD)

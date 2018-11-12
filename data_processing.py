@@ -62,7 +62,7 @@ def process_session_sec(df, column_name, prefix, median_sec=None):
 
 def process_age(df, column_name, prefix, median_age=None):
     new_column_name = prefix + column_name
-    df[new_column_name] = df[column_name]
+    df[new_column_name] = df[column_name].apply(lambda x: 2015 - x if x > 1900 else x)
     column_data = np.array(df[new_column_name].values.tolist())
     df[new_column_name] = np.where(column_data > 115, np.NaN, column_data).tolist()
     
