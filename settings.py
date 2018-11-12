@@ -1,3 +1,5 @@
+from class_imbalance import *
+
 DROP_COLUMNS = [
     'id', 
     'date_account_created',
@@ -59,19 +61,14 @@ LABEL_MAPPING = {
      'other' : 11 
 }
 
-CLASS_IMBALANCE = {
-    0:0.7,
-    1:1,
-    2:1,
-    3:1,
-    4:1,
-    5:1,
-    6:1,
-    7:1,
-    8:1,
-    9:1,
-    10:0.5,
-    11:1
+SAMPLING_METHOD = 'over_sample'
+
+SAMPLING_MAPPING = {
+    'no_transform': get_simple_data,
+    'over_sample': get_over_sampled_data,
+    'under_sample': get_under_sampled_data,
+    'smote_sample': get_smote_data,
+    'smotteenn_sample': get_smoteenn_data
 }
 
 LABEL_COLUMN = 'label_country_destination'
@@ -82,6 +79,6 @@ METADATA_PATH = './metadata/metadata.pkl'
 GRAPHS = 'graphs/'
 STACK_PLOTS = 'graphs/stack_plots/'
 METRICS = 'metrics/'
-
+PROCESSED_DATA = 'processed_data/data.pkl'
 
 DEBUG = False

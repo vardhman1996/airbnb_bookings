@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
 import pickle as pkl
-import matplotlib.pyplot as plt
 from sklearn.feature_selection import chi2
-
 from settings import *
 
 def convert_to_datetime(df, column_name):
@@ -40,15 +38,14 @@ def merge_df(left_df, right_df, left_column, right_column, how='inner'):
     result = result.drop(columns=right_column)
     return result
 
-def extract_date_features(df, column_name):
-    df[column_name + '_year'] = df[column_name].apply(get_year)
-    df[column_name + '_month'] = df[column_name].apply(get_month)
-    df[column_name + '_day'] = df[column_name].apply(get_day)
+# def extract_date_features(df, column_name):
+#     df[column_name + '_year'] = df[column_name].apply(get_year)
+#     df[column_name + '_month'] = df[column_name].apply(get_month)
+#     df[column_name + '_day'] = df[column_name].apply(get_day)
 
-    df[column_name + '_year'].fillna(0, inplace=True)
-    df[column_name + '_month'].fillna(0, inplace=True)
-    df[column_name + '_day'].fillna(0, inplace=True)
-
+#     df[column_name + '_year'].fillna(0, inplace=True)
+#     df[column_name + '_month'].fillna(0, inplace=True)
+#     df[column_name + '_day'].fillna(0, inplace=True)
 
 def process_session_sec(df, column_name, prefix, median_sec=None):
     new_column_name = prefix + column_name
