@@ -13,8 +13,8 @@ def convert_to_datetime(df, column_name):
 def convert_to_labels(df, label_column, name):
     df[name] = (train_users[label_column] != 'NDF').astype(int)
 
-def to_dummy(df, column_name, prefix):
-    new_col = pd.get_dummies(df[column_name], prefix=prefix)
+def to_dummy(df, column_name):
+    new_col = pd.get_dummies(df[column_name], prefix=column_name)
     df[new_col.columns] = new_col
 
 def to_categorical(df, column_name, prefix):
@@ -86,9 +86,8 @@ def process_labels_category(df, column_name, prefix):
     new_column_name = prefix  + column_name
     df[new_column_name] = df[column_name].apply(lambda x: LABEL_MAPPING[x])
 
-def save_metadata(median_sec, median_age, df_feature_columns):
+def save_metadata(median_age, df_feature_columns):
     meta_data = {}
-    meta_data['median_sec'] = median_sec
     meta_data['median_age'] = median_age
     meta_data['feature_columns'] = df_feature_columns
 
@@ -103,6 +102,30 @@ def load_metadata():
     return meta_data
 
 
+def convert_to_useful_attributes(df, column_name, attributes):
+    df[column_name] = df[column_name].apply(lambda x : 'Other' if x not in attributes else x)
+    return df
+
+
+def session_features(df, df_ses):
+    total_seconds = df_ses.groupby('user_id')['secs_elapsed'].sum()
+    average_seconds = df_ses.groupby('user_id')['secs_elapsed'].mean().fillna(0)
+    total_sessions = df_ses.groupby('user_id')['action'].count()
+    distinct_sessions = df_ses.groupby('user_id')['action'].nunique()
+    num_short_sessions = df_ses[df_ses['secs_elapsed'] <= 300].groupby('user_id')['action'].count()
+    num_long_sessions = df_ses[df_ses['secs_elapsed'] >= 2000].groupby('user_id')['action'].count()
+    num_devices = df_ses.groupby('user_id')['device_type'].nunique()
+
+    df['total_seconds'] = df['id'].apply(lambda x: total_seconds[x] if x in total_seconds else 0)
+    df['average_seconds'] = df['id'].apply(lambda x: average_seconds[x] if x in average_seconds else 0)
+    df['total_sessions'] = df['id'].apply(lambda x: total_sessions[x] if x in total_sessions else 0)
+    df['distinct_sessions'] = df['id'].apply(lambda x: distinct_sessions[x] if x in distinct_sessions else 0)
+    df['num_short_sessions'] = df['id'].apply(lambda x: num_short_sessions[x] if x in num_short_sessions else 0)
+    df['num_long_sessions'] = df['id'].apply(lambda x: num_long_sessions[x] if x in num_long_sessions else 0)
+    df['num_devices'] = df['id'].apply(lambda x: num_devices[x] if x in num_devices else 0)
+    return df
+
+
 def preprocess_df(df, train=True):
     # check validity in test set?
     # extract_date_features(df, 'date_first_booking')
@@ -110,45 +133,24 @@ def preprocess_df(df, train=True):
     # read these values from a file for test
 
     median_age = None
-    median_sec = None
     df_feature_columns = None
     if not train:
         meta_data = load_metadata()
         median_age = meta_data['median_age']
-        median_sec = meta_data['median_sec']
         df_feature_columns = meta_data['feature_columns']
 
-    # print("Median age {} Median sec {}".format(median_age, median_sec))
-
     process_labels_category(df, 'country_destination', 'label_')
-    
-    median_sec = process_session_sec(df, 'secs_elapsed', 'processed_', median_sec=median_sec)
     median_age = process_age(df, 'age', 'processed_', median_age=median_age)
 
-    to_categorical(df, 'signup_flow', 'processed_')
-    to_categorical(df, 'first_browser', 'processed_')
-    to_dummy(df, 'gender', 'gender')
-    to_dummy(df, 'first_device_type', 'first_device_td')
-    to_dummy(df, 'signup_app', 'signup_type')
-    to_dummy(df, 'signup_method', 'signup_method')
-    to_dummy(df, 'language', 'language_used')
-    to_dummy(df, 'affiliate_channel', 'affiliate_channel')
-    to_dummy(df, 'signup_app', 'signup_app')
-    to_dummy(df, 'first_affiliate_tracked', 'first_aff_tracked')
+    for col in STAT_COLS:
+        df = convert_to_useful_attributes(df, col, LIST_MAPPING[col])
+        to_dummy(df, col)
 
     if train:
         df = df.drop(columns=DROP_COLUMNS)
         df_feature_columns = list(df.columns.values)
         df_feature_columns.remove(LABEL_COLUMN)
-        save_metadata(median_sec, median_age, df_feature_columns)    
-
-    
-    # for test df_feature columns should be read from a file
-    # if DEBUG:
-    #     print("NUM COLUMNS: {}".format(df.columns.values.shape))
-    #     print("Test Columns {}".format(df.columns))
-    #     df_debug = df[df_feature_columns]
-    #     print("Final columns {}".format(df_debug.columns))
+        save_metadata(median_age, df_feature_columns)    
     
     x_features = df[df_feature_columns].values
     y_labels = df[[LABEL_COLUMN]].values

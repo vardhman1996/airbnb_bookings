@@ -15,8 +15,21 @@ DROP_COLUMNS = [
     'first_device_type', 
     'first_browser',
     'country_destination',
-    'secs_elapsed'
 ]
+
+
+LIST_MAPPING = {
+    'gender': ['MALE', 'FEMALE', 'OTHER'],
+    'signup_method': ['basic'],
+    'signup_flow': [2,3,6],
+    'language': ['ca', 'en', 'fi', 'ja'],
+    'affiliate_channel': ['direct', 'other', 'seo', 'sem-brand'],
+    'affiliate_provider': ['direct', 'google', 'craigslist'],
+    'first_affiliate_tracked': ['linked', 'untracked'],
+    'signup_app': ['Web'],
+    'first_device_type': ['Mac Desktop', 'Windows Desktop'],
+    'first_browser': ['Chrome', 'Safari', 'Firefox']
+}
 
 STAT_COLS = [
     'gender',
@@ -67,5 +80,8 @@ DATA_PATH = './data/'
 METADATA_PATH = './metadata/metadata.pkl'
 
 GRAPHS = 'graphs/'
+STACK_PLOTS = 'graphs/stack_plots/'
+METRICS = 'metrics/'
+
 
 DEBUG = False
