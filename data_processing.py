@@ -68,7 +68,6 @@ def process_age(df, column_name, prefix, median_age=None):
     
     if not median_age:
         median_age = df[new_column_name].median()
-        print("median age: {}".format(median_age))
 
     df[new_column_name].fillna(median_age, inplace=True)
     assert(df[new_column_name].isna().sum() == 0)
@@ -81,6 +80,7 @@ def process_labels_binary(df, column_name, prefix):
 
 def process_labels_category(df, column_name, prefix):
     new_column_name = prefix  + column_name
+    print("new ", new_column_name)
     df[new_column_name] = df[column_name].apply(lambda x: LABEL_MAPPING[x])
 
 def save_metadata(median_age, df_feature_columns):
@@ -90,7 +90,6 @@ def save_metadata(median_age, df_feature_columns):
 
     with open(METADATA_PATH, 'wb') as file:
         pkl.dump(meta_data, file)
-
 
 def load_metadata():
     with open(METADATA_PATH, 'rb') as file:
@@ -103,8 +102,7 @@ def convert_to_useful_attributes(df, column_name, attributes):
     df[column_name] = df[column_name].apply(lambda x : 'Other' if x not in attributes else x)
     return df
 
-
-def session_features(df, df_ses):
+def session_features(df, df_ses, metadata=None):
     total_seconds = df_ses.groupby('user_id')['secs_elapsed'].sum()
     average_seconds = df_ses.groupby('user_id')['secs_elapsed'].mean().fillna(0)
     total_sessions = df_ses.groupby('user_id')['action'].count()
@@ -113,22 +111,54 @@ def session_features(df, df_ses):
     num_long_sessions = df_ses[df_ses['secs_elapsed'] >= 2000].groupby('user_id')['action'].count()
     num_devices = df_ses.groupby('user_id')['device_type'].nunique()
 
-    df['total_seconds'] = df['id'].apply(lambda x: total_seconds[x] if x in total_seconds else 0)
-    df['average_seconds'] = df['id'].apply(lambda x: average_seconds[x] if x in average_seconds else 0)
-    df['total_sessions'] = df['id'].apply(lambda x: total_sessions[x] if x in total_sessions else 0)
-    df['distinct_sessions'] = df['id'].apply(lambda x: distinct_sessions[x] if x in distinct_sessions else 0)
-    df['num_short_sessions'] = df['id'].apply(lambda x: num_short_sessions[x] if x in num_short_sessions else 0)
-    df['num_long_sessions'] = df['id'].apply(lambda x: num_long_sessions[x] if x in num_long_sessions else 0)
-    df['num_devices'] = df['id'].apply(lambda x: num_devices[x] if x in num_devices else 0)
-    return df
+    df['total_seconds'] = df['id'].apply(lambda x: total_seconds[x] if x in total_seconds else np.NaN)
+    df['average_seconds'] = df['id'].apply(lambda x: average_seconds[x] if x in average_seconds else np.NaN)
+    df['total_sessions'] = df['id'].apply(lambda x: total_sessions[x] if x in total_sessions else np.NaN)
+    df['distinct_sessions'] = df['id'].apply(lambda x: distinct_sessions[x] if x in distinct_sessions else np.NaN)
+    df['num_short_sessions'] = df['id'].apply(lambda x: num_short_sessions[x] if x in num_short_sessions else np.NaN)
+    df['num_long_sessions'] = df['id'].apply(lambda x: num_long_sessions[x] if x in num_long_sessions else np.NaN)
+    df['num_devices'] = df['id'].apply(lambda x: num_devices[x] if x in num_devices else np.NaN)
+
+    if not metadata:
+        metadata = {}
+        total_seconds_median = df['total_seconds'].median()
+        avg_seconds_median = df['average_seconds'].median()
+        total_session_median = df['total_sessions'].median()
+        dist_session_median = df['distinct_sessions'].median()
+        num_short_median = df['num_short_sessions'].median()
+        num_long_median = df['num_long_sessions'].median()
+        num_devices_median = df['num_devices'].median()
+
+        metadata['total_seconds_median'] = total_seconds_median
+        metadata['avg_seconds_median'] = avg_seconds_median
+        metadata['total_session_median'] = total_session_median
+        metadata['dist_session_median'] = dist_session_median
+        metadata['num_short_median'] = num_short_median
+        metadata['num_long_median'] = num_long_median
+        metadata['num_devices_median'] = num_devices_median
+    else:
+        total_seconds_median = metadata['total_seconds_median']
+        avg_seconds_median = metadata['avg_seconds_median']
+        total_session_median = metadata['total_session_median']
+        dist_session_median = metadata['dist_session_median']
+        num_short_median = metadata['num_short_median']
+        num_long_median = metadata['num_long_median']
+        num_devices_median = metadata['num_devices_median']
+
+    df['total_seconds'].fillna(total_seconds_median, inplace=True)
+    df['average_seconds'].fillna(avg_seconds_median, inplace=True)
+    df['total_sessions'].fillna(total_session_median, inplace=True)
+    df['distinct_sessions'].fillna(dist_session_median, inplace=True)
+    df['num_short_sessions'].fillna(num_short_median, inplace=True)
+    df['num_long_sessions'].fillna(num_long_median, inplace=True)
+    df['num_devices'].fillna(num_devices_median, inplace=True)
+
+    return df, metadata
 
 
 def preprocess_df(df, train=True):
     # check validity in test set?
     # extract_date_features(df, 'date_first_booking')
-
-    # read these values from a file for test
-
     median_age = None
     df_feature_columns = None
     if not train:
@@ -149,7 +179,7 @@ def preprocess_df(df, train=True):
         df_feature_columns.remove(LABEL_COLUMN)
         save_metadata(median_age, df_feature_columns)    
     
-    x_features = df[df_feature_columns].values
-    y_labels = df[[LABEL_COLUMN]].values
+    x_features = df[df_feature_columns]
+    y_labels = df[[LABEL_COLUMN]]
 
-    return x_features, y_labels.flatten()
+    return x_features, y_labels

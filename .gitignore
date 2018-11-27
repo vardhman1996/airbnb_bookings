@@ -10,6 +10,8 @@ graphs/
 processed_data/
 metrics/
 classification_report/
+imbalance_classification_report/
+
 # C extensions
 *.so
 
