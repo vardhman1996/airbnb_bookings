@@ -61,7 +61,7 @@ LABEL_MAPPING = {
      'other' : 11 
 }
 
-SAMPLING_METHOD = 'no_transform'
+SAMPLING_METHOD = 'over_sample'
 
 SAMPLING_MAPPING = {
     'no_transform': get_simple_data,

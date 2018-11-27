@@ -3,6 +3,7 @@ import os
 from sklearn.model_selection import train_test_split
 from data_processing import *
 from settings import *
+import feature_models as feat_model
 
 def load_data():
     train_users = pd.read_csv(DATA_PATH + 'train_users_2.csv')
@@ -18,7 +19,8 @@ def load_sessions(agg=False):
     return sessions_df
 
 def split_data(train_users):
-    new_train, new_test = train_test_split(train_users, test_size=0.3, shuffle=True, random_state=0)
+    train_users = train_users.sort_values(by='date_account_created')
+    new_train, new_test = train_test_split(train_users, test_size=0.3, shuffle=True, random_state=1)
     return new_train, new_test
 
 def get_data():
@@ -45,9 +47,20 @@ def get_data():
 
 
         # APPLY LOGISTIC ON XTRAIN_DF AND YTRAIN_DF TO GET MORE FEATURES
+        classify_logistic = feat_model.ClassifyLogistic(pd.concat([xtrain_df, ytrain_df], axis=1))
+        classify_logistic.train()
+
+        new_train_index = classify_logistic.get_new_train_index()
+        xtrain_df, ytrain_df = xtrain_df.loc[new_train_index], ytrain_df.loc[new_train_index]
+
+        xtrain_logit_feature = classify_logistic.pred(pd.concat([xtrain_df, ytrain_df], axis=1))
+        xtrain_df['logistic_feature'] = xtrain_logit_feature
+
+        xtest_logit_feature = classify_logistic.pred(pd.concat([xtest_df, ytest_df], axis=1))
+        xtest_df['logistic_feature'] = xtest_logit_feature
 
         xtrain = xtrain_df.values
-        ytrain = ytrain_df.values.faltten()
+        ytrain = ytrain_df.values.flatten()
         xtest = xtest_df.values
         ytest = ytest_df.values.flatten()
 
