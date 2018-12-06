@@ -12,7 +12,7 @@ def split_data(data, test_size=0.4):
 def process_labels_binary(df, column_name):
     df[column_name] = (df[column_name] != LABEL_MAPPING['NDF']).astype(int)
 
-class ClassifyLogistic():
+class ClassifyLogistic:
     def __init__(self, train_df):
         process_labels_binary(train_df, LABEL_COLUMN)
         new_train_df, new_test_df = split_data(train_df, test_size=0.6)
@@ -46,8 +46,6 @@ class ClassifyLogistic():
 
     def eval(self, xtest, ytest):
         ypred = self.logistic.predict(xtest)
-        # print(np.bincount(ypred))
-
         yprob = self.logistic.predict_proba(xtest)
         accuracy_test = metrics.accuracy_score(ytest, ypred)
         log_loss = metrics.log_loss(ytest, yprob)

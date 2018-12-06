@@ -129,6 +129,14 @@ def session_features(df, df_ses, metadata=None):
         num_long_median = df['num_long_sessions'].median()
         num_devices_median = df['num_devices'].median()
 
+        total_seconds_mean = df['total_seconds'].mean()
+        avg_seconds_mean = df['average_seconds'].mean()
+        total_session_mean = df['total_sessions'].mean()
+        dist_session_mean = df['distinct_sessions'].mean()
+        num_short_mean = df['num_short_sessions'].mean()
+        num_long_mean = df['num_long_sessions'].mean()
+        num_devices_mean = df['num_devices'].mean()
+
         metadata['total_seconds_median'] = total_seconds_median
         metadata['avg_seconds_median'] = avg_seconds_median
         metadata['total_session_median'] = total_session_median
@@ -136,6 +144,14 @@ def session_features(df, df_ses, metadata=None):
         metadata['num_short_median'] = num_short_median
         metadata['num_long_median'] = num_long_median
         metadata['num_devices_median'] = num_devices_median
+
+        metadata['total_seconds_mean'] = total_seconds_mean
+        metadata['avg_seconds_mean'] = avg_seconds_mean
+        metadata['total_session_mean'] = total_session_mean
+        metadata['dist_session_mean'] = dist_session_mean
+        metadata['num_short_mean'] = num_short_mean
+        metadata['num_long_mean'] = num_long_mean
+        metadata['num_devices_mean'] = num_devices_mean
     else:
         total_seconds_median = metadata['total_seconds_median']
         avg_seconds_median = metadata['avg_seconds_median']
@@ -144,6 +160,22 @@ def session_features(df, df_ses, metadata=None):
         num_short_median = metadata['num_short_median']
         num_long_median = metadata['num_long_median']
         num_devices_median = metadata['num_devices_median']
+
+        total_seconds_mean = metadata['total_seconds_mean']
+        avg_seconds_mean = metadata['avg_seconds_mean']
+        total_session_mean = metadata['total_session_mean']
+        dist_session_mean = metadata['dist_session_mean']
+        num_short_mean = metadata['num_short_mean']
+        num_long_mean = metadata['num_long_mean']
+        num_devices_mean = metadata['num_devices_mean']
+
+    df['total_seconds'] = df['total_seconds'] - total_seconds_mean
+    df['average_seconds'] = df['average_seconds'] - avg_seconds_mean
+    df['total_sessions'] = df['total_sessions'] - total_session_mean
+    df['distinct_sessions'] = df['distinct_sessions'] - dist_session_mean
+    df['num_short_sessions'] = df['num_short_sessions'] - num_short_mean
+    df['num_long_sessions'] = df['num_long_sessions'] - num_long_mean
+    df['num_devices'] = df['num_devices'] - num_devices_mean
 
     df['total_seconds'].fillna(total_seconds_median, inplace=True)
     df['average_seconds'].fillna(avg_seconds_median, inplace=True)

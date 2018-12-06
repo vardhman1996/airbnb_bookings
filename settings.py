@@ -61,7 +61,8 @@ LABEL_MAPPING = {
      'other' : 11 
 }
 
-SAMPLING_METHOD = 'over_sample'
+SAMPLING_METHOD = 'no_transform'
+WEIGHTED = True
 
 SAMPLING_MAPPING = {
     'no_transform': get_simple_data,
@@ -70,6 +71,8 @@ SAMPLING_MAPPING = {
     'smote_sample': get_smote_data,
     'smotteenn_sample': get_smoteenn_data
 }
+
+RANDOM_SEARCH = False
 
 LABEL_COLUMN = 'label_country_destination'
 

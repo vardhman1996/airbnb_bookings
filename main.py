@@ -6,6 +6,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, VotingClassifier, BaggingClassifier, AdaBoostClassifier, ExtraTreesClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.naive_bayes import GaussianNB
+from xgboost.sklearn import XGBClassifier
 from sklearn.svm import SVC
 from sklearn import metrics
 import multiprocessing 
@@ -15,6 +16,8 @@ from data_loader import get_data
 from plot_graphs import *
 from settings import SAVE_METRICS
 from imblearn.metrics import classification_report_imbalanced as imbal_class_report
+from scipy.stats import randint as sp_randint
+import grid_search
 
 def evaluate_model(ypred, yprob, ytest, filename):
     print(np.bincount(ytest))
@@ -46,10 +49,10 @@ def evaluate_model(ypred, yprob, ytest, filename):
     print(classification_report)
     print(imbalance_classification_report)
 
-def train_models(classifiers, xtrain, ytrain, xtest, ytest, transform=None):
+def train_models(classifiers, xtrain, ytrain, xtest, ytest, transform=None, sample_weight=None):
     for name, classifier in classifiers:
         print("Running {} classifier...".format(name))
-        classifier.fit(xtrain, ytrain)
+        classifier.fit(xtrain, ytrain, sample_weight=sample_weight)
         ypred = classifier.predict(xtest)
         yprob = classifier.predict_proba(xtest)
         filename = '{}/{}'.format(transform, name)
@@ -61,30 +64,46 @@ def get_classifiers():
     gaussian_nb = GaussianNB()
     gradient_boosting = GradientBoostingClassifier(max_features='auto', verbose=True)
     # svc = SVC(kernel='rbf')
-    votingclf = VotingClassifier(estimators=[('lr', logistic), ('rf', random_forest), ('gnb', gaussian_nb), ('gb', gradient_boosting)], voting='hard', n_jobs=-1)
+    votingclf = VotingClassifier(estimators=[('lr', logistic), ('rf', random_forest), ('gnb', gaussian_nb), ('gb', gradient_boosting)], voting='soft', n_jobs=-1)
     mlp = MLPClassifier((256, 512, 1024, 512, 256), max_iter=100, learning_rate='adaptive', verbose=True, validation_fraction=0.1)
     bagging_classifier = BaggingClassifier(n_jobs=-1, verbose=1)
     adaboost = AdaBoostClassifier(random_state=1)
     extraTree = ExtraTreesClassifier(n_jobs=-1, class_weight='balanced', verbose=1)
+    xgboost = XGBClassifier(n_jobs=-1, verbose=1)
 
     classifiers = [ 
                     ('logistic', logistic),
-                    ('gradient_boosting', gradient_boosting), 
-                    # ('gaussian nb', gaussian_nb), 
                     # ('random_forest', random_forest),
-                    # ('bagging', bagging_classifier),
-                    ('adaboost', adaboost), 
-                    # ('extra_tree', extraTree),
-                    # ('voting', votingclf),
-                    # ('MLP', mlp)
+                    # ('adaboost', adaboost),
+                    # ('xgboost', xgboost)
                 ]
-    return classifiers
+
+    params_dict = {
+        # 'gradient_boosting': {
+        #     'n_estimators' : sp_randint(50, 1000),
+        #     'max_depth': sp_randint(1, 11),
+        #     'max_features': ['auto', 'sqrt', 'log2', None]
+        # },
+        'adaboost': {
+            'n_estimators': sp_randint(50, 1000)
+        },
+        'xgboost': {
+            'n_estimators': sp_randint(50, 1000),
+            'max_depth': sp_randint(1, 11),
+            'booster': ['gbtree', 'gblinear', 'dart']
+        }
+    }
+    return classifiers, params_dict
 
 if __name__ == "__main__":
     xtrain, ytrain, xtest, ytest = get_data()
     print("Using sampling technique: {}".format(SAMPLING_METHOD))
     xtrain_resampled, ytrain_resampled = SAMPLING_MAPPING[SAMPLING_METHOD](xtrain, ytrain)
-    classifiers = get_classifiers()
+    if RANDOM_SEARCH:
+        classifiers, params_dict = get_classifiers()
+        grid_search.random_search(classifiers, params_dict, xtrain_resampled, ytrain_resampled)
+    else:
+        classifiers, _ = get_classifiers()
 
     if not os.path.exists(os.path.join(METRICS, SAMPLING_METHOD)):
         os.makedirs(os.path.join(METRICS, SAMPLING_METHOD))
@@ -97,4 +116,11 @@ if __name__ == "__main__":
     print(np.bincount(ytrain))
     print("Resampled bincount")
     print(np.bincount(ytrain_resampled))
-    train_models(classifiers, xtrain_resampled, ytrain_resampled, xtest, ytest, transform=SAMPLING_METHOD)
+
+    sample_weight = None
+    if SAMPLING_METHOD == 'no_transform' and WEIGHTED:
+        bincounts = np.bincount(ytrain)
+        fit_weights = 1.0 / (bincounts / np.sum(bincounts))
+        sample_weight = np.array([fit_weights[val] for val in ytrain_resampled])
+
+    train_models(classifiers, xtrain_resampled, ytrain_resampled, xtest, ytest, transform=SAMPLING_METHOD, sample_weight=sample_weight)
