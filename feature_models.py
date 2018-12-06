@@ -1,8 +1,39 @@
+import pandas as pd
+import numpy as np
 from settings import *
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression, HuberRegressor, ElasticNet, ElasticNetCV, Lasso, LassoCV, Ridge
+from sklearn.svm import SVR
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 import numpy as np
+
+# linear =
+# less than 1 (0,)
+# greater than 115 (0,)
+# min and max 18.409835818231183 53.424355055147494
+# difference greater than 5 (58087,)
+# median 37.14333985791983
+
+# Huber =
+# less than 1 (7,)
+# greater than 115 (1865,)
+# min and max -35.94206115621723 1947.131627741896
+# difference greater than 5 (59137,)
+# median 28.060843670406097
+
+# ElasticNet =
+# less than 1 (0,)
+# greater than 115 (0,)
+# min and max 8.27978563285912 45.48441713489797
+# difference greater than 5 (60667,)
+# median 37.33353090440245
+
+# Lasso =
+# less than 1 (0,)
+# greater than 115 (0,)
+# min and max 9.72976672044365 43.98109797547863
+# difference greater than 5 (61412,)
+# median 37.227065988288544
 
 
 def split_data(data, test_size=0.4):
@@ -11,6 +42,48 @@ def split_data(data, test_size=0.4):
 
 def process_labels_binary(df, column_name):
     df[column_name] = (df[column_name] != LABEL_MAPPING['NDF']).astype(int)
+
+
+class PredictAge:
+    def __init__(self, train_df):
+        self.index = train_df.index
+        self.naindex = train_df[train_df[AGE_COLUMN].isnull()].index
+        xtrain = train_df.dropna()
+        print(min(xtrain[AGE_COLUMN].values))
+        ytrain = xtrain[AGE_COLUMN]
+        xtrain = xtrain.drop(columns=[AGE_COLUMN])
+        self.xtrain = self.get_features_labels(xtrain)
+        self.ytrain = self.get_features_labels(ytrain)
+        self.linear_regression = LinearRegression()
+
+    def get_train_index(self):
+        return self.index
+
+    def get_na_index(self):
+        return self.naindex
+
+    def get_features_labels(self, df):
+        return df.values
+
+    def train(self):
+        self.linear_regression.fit(self.xtrain, self.ytrain)
+        self.eval(self.xtrain, self.ytrain, evaluate=True)
+
+    def eval(self, x, y_true, evaluate):
+        y_pred = self.linear_regression.predict(x)
+        if evaluate:
+            print(metrics.mean_squared_error(y_true, y_pred))
+        else:
+            return y_pred
+
+    def pred(self, test_df, evaluate=False):
+        y_test = test_df[AGE_COLUMN]
+        x_test = test_df.drop(columns=[AGE_COLUMN])
+        x_test = self.get_features_labels(x_test)
+        y_test = self.get_features_labels(y_test)
+        out = self.eval(x_test, y_test, evaluate)
+        return out
+
 
 class ClassifyLogistic:
     def __init__(self, train_df):

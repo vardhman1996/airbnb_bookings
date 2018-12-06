@@ -75,6 +75,7 @@ SAMPLING_MAPPING = {
 RANDOM_SEARCH = False
 
 LABEL_COLUMN = 'label_country_destination'
+AGE_COLUMN = 'processed_age'
 
 DATA_PATH = './data/'
 METADATA_PATH = './metadata/metadata.pkl'

@@ -36,6 +36,41 @@ def get_data():
         xtrain_df, ytrain_df = preprocess_df(train_df, train=True)
         xtest_df, ytest_df = preprocess_df(test_df, train=False)
 
+        # print(xtrain_df.info())
+        # print(xtest_df.info())
+
+        predict_age = feat_model.PredictAge(xtrain_df)
+        predict_age.train()
+
+        new_train_index = predict_age.get_train_index()
+        na_train_index = predict_age.get_na_index()
+        # print(type(new_train_index), new_train_index)
+        # xtrain_df = xtrain_df.loc[new_train_index]
+
+        # print(xtrain_df.loc[na_train_index])
+        xtrain_age_feature = predict_age.pred(xtrain_df.loc[na_train_index])
+        # print(xtrain_age_feature)
+        # (xtrain_df.loc[na_train_index])['processed_age'] = xtrain_age_feature
+
+        for idx, val in zip(na_train_index, xtrain_age_feature):
+            tmp = val
+            if val < 1:
+                tmp = 1
+            elif val > 115:
+                tmp = 115
+            xtrain_df.at[idx, AGE_COLUMN] = int(round(tmp))
+
+        na_test_index = test_df[test_df[AGE_COLUMN].isnull()].index
+        xtest_age_feature = predict_age.pred(xtest_df)
+        
+        for idx, val in zip(na_test_index, xtest_age_feature):
+            tmp = val
+            if val < 1:
+                tmp = 1
+            elif val > 115:
+                tmp = 115
+            xtest_df.at[idx, AGE_COLUMN] = int(round(tmp))
+
         # MODEL TO COMPUTE AGE:
             # CAREFUL: need to preserve the order since the features are already generated
             # Try to use IDS in xtrain_df and xtest_df

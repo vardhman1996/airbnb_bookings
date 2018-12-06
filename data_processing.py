@@ -69,8 +69,8 @@ def process_age(df, column_name, prefix, median_age=None):
     if not median_age:
         median_age = df[new_column_name].median()
 
-    df[new_column_name].fillna(median_age, inplace=True)
-    assert(df[new_column_name].isna().sum() == 0)
+    # df[new_column_name].fillna(median_age, inplace=True)
+    # assert(df[new_column_name].isna().sum() == 0)
 
     return median_age
 

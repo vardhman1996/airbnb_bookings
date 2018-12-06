@@ -73,9 +73,9 @@ def get_classifiers():
 
     classifiers = [ 
                     ('logistic', logistic),
-                    # ('random_forest', random_forest),
-                    # ('adaboost', adaboost),
-                    # ('xgboost', xgboost)
+                    ('random_forest', random_forest),
+                    ('adaboost', adaboost),
+                    ('xgboost', xgboost)
                 ]
 
     params_dict = {
