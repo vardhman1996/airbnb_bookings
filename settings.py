@@ -61,7 +61,7 @@ LABEL_MAPPING = {
      'other' : 11 
 }
 
-SAMPLING_METHOD = 'over_sample'
+SAMPLING_METHOD = 'no_transform'
 
 SAMPLING_MAPPING = {
     'no_transform': get_simple_data,
@@ -72,6 +72,7 @@ SAMPLING_MAPPING = {
 }
 
 LABEL_COLUMN = 'label_country_destination'
+AGE_COLUMN = 'processed_age'
 
 DATA_PATH = './data/'
 METADATA_PATH = './metadata/metadata.pkl'

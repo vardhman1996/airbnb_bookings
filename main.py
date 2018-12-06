@@ -68,12 +68,12 @@ def get_classifiers():
     extraTree = ExtraTreesClassifier(n_jobs=-1, class_weight='balanced', verbose=1)
 
     classifiers = [ 
-                    ('logistic', logistic),
+                    # ('logistic', logistic),
                     ('gradient_boosting', gradient_boosting), 
                     # ('gaussian nb', gaussian_nb), 
                     # ('random_forest', random_forest),
                     # ('bagging', bagging_classifier),
-                    ('adaboost', adaboost), 
+                    # ('adaboost', adaboost), 
                     # ('extra_tree', extraTree),
                     # ('voting', votingclf),
                     # ('MLP', mlp)
