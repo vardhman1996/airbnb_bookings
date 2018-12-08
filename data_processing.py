@@ -1,8 +1,10 @@
-import pandas as pd
-import numpy as np
 import pickle as pkl
-from sklearn.feature_selection import chi2
+
+import numpy as np
+import pandas as pd
+
 from settings import *
+
 
 def convert_to_datetime(df, column_name):
     df[column_name] = pd.to_datetime(df[column_name])

@@ -61,11 +61,12 @@ LABEL_MAPPING = {
      'other' : 11 
 }
 
-SAMPLING_METHOD = 'no_transform'
-WEIGHTED = True
+SAMPLING_METHOD = 'over_sample'
+WEIGHTED = False
 
 SAMPLING_MAPPING = {
     'no_transform': get_simple_data,
+    'no_transform_weighted': get_simple_data,
     'over_sample': get_over_sampled_data,
     'under_sample': get_under_sampled_data,
     'smote_sample': get_smote_data,
@@ -86,6 +87,8 @@ METRICS = 'metrics/'
 PROCESSED_DATA = 'processed_data/data.pkl'
 CLASSIFICATION_REPORT = 'classification_report/'
 IMBALANCE_CLASSIFICATION_REPORT = 'imbalance_classification_report/'
+GRID_SEARCH_REPORT = 'grid_search_report/'
+FINAL_REPORTS = 'final_reports'
 
 DEBUG = False
 SAVE_METRICS = True

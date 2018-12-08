@@ -1,0 +1,19 @@
+Model with rank: 1
+Mean validation score: 0.447 (std: 0.000)
+Parameters: {'class_weight': None, 'criterion': 'entropy', 'max_features': 'auto', 'min_samples_leaf': 1, 'n_estimators': 948}
+
+Model with rank: 2
+Mean validation score: 0.446 (std: 0.002)
+Parameters: {'class_weight': None, 'criterion': 'entropy', 'max_features': 'auto', 'min_samples_leaf': 1, 'n_estimators': 146}
+
+Model with rank: 3
+Mean validation score: 0.430 (std: 0.001)
+Parameters: {'class_weight': None, 'criterion': 'entropy', 'max_features': 'auto', 'min_samples_leaf': 2, 'n_estimators': 190}
+
+Model with rank: 4
+Mean validation score: 0.429 (std: 0.001)
+Parameters: {'class_weight': None, 'criterion': 'gini', 'max_features': 'auto', 'min_samples_leaf': 2, 'n_estimators': 160}
+
+Model with rank: 5
+Mean validation score: 0.428 (std: 0.001)
+Parameters: {'class_weight': None, 'criterion': 'entropy', 'max_features': 'auto', 'min_samples_leaf': 2, 'n_estimators': 69}

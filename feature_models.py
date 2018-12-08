@@ -1,11 +1,9 @@
-import pandas as pd
-import numpy as np
-from settings import *
-from sklearn.linear_model import LogisticRegression, LinearRegression, HuberRegressor, ElasticNet, ElasticNetCV, Lasso, LassoCV, Ridge
-from sklearn.svm import SVR
-from sklearn import metrics
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-import numpy as np
+from sklearn.svm import SVR
+
+from settings import *
+
 
 # linear =
 # less than 1 (0,)
@@ -54,7 +52,7 @@ class PredictAge:
         xtrain = xtrain.drop(columns=[AGE_COLUMN])
         self.xtrain = self.get_features_labels(xtrain)
         self.ytrain = self.get_features_labels(ytrain)
-        self.linear_regression = LinearRegression()
+        self.svr = SVR(kernel='rbf', gamma='scale')
 
     def get_train_index(self):
         return self.index
@@ -66,11 +64,11 @@ class PredictAge:
         return df.values
 
     def train(self):
-        self.linear_regression.fit(self.xtrain, self.ytrain)
+        self.svr.fit(self.xtrain, self.ytrain)
         self.eval(self.xtrain, self.ytrain, evaluate=True)
 
     def eval(self, x, y_true, evaluate):
-        y_pred = self.linear_regression.predict(x)
+        y_pred = self.svr.predict(x)
         if evaluate:
             print(metrics.mean_squared_error(y_true, y_pred))
         else:

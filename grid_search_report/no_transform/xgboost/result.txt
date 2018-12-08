@@ -1,0 +1,19 @@
+Model with rank: 1
+Mean validation score: 0.652 (std: 0.000)
+Parameters: {'alpha': 0.1, 'booster': 'gblinear', 'lambda': 0.01, 'max_depth': 7, 'n_estimators': 596}
+
+Model with rank: 2
+Mean validation score: 0.652 (std: 0.000)
+Parameters: {'alpha': 1, 'booster': 'gblinear', 'lambda': 1, 'max_depth': 9, 'n_estimators': 387}
+
+Model with rank: 3
+Mean validation score: 0.651 (std: 0.000)
+Parameters: {'alpha': 0.1, 'booster': 'gblinear', 'lambda': 0.001, 'max_depth': 2, 'n_estimators': 60}
+
+Model with rank: 4
+Mean validation score: 0.581 (std: 0.001)
+Parameters: {'alpha': 0.1, 'booster': 'gbtree', 'lambda': 0.001, 'max_depth': 8, 'n_estimators': 956}
+
+Model with rank: 5
+Mean validation score: 0.577 (std: 0.000)
+Parameters: {'alpha': 1, 'booster': 'dart', 'lambda': 1, 'max_depth': 10, 'n_estimators': 945}

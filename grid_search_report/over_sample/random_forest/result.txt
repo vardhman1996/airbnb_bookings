@@ -1,0 +1,29 @@
+Model with rank: 1
+Mean validation score: 0.631 (std: 0.004)
+Mean train GM accuracy: 0.652 (std: 0.001)
+Mean train weighted accuracy: 0.801 (std: 0.801)
+Parameters: {'bootstrap': False, 'class_weight': None, 'criterion': 'entropy', 'max_features': 'auto', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 272}
+
+Model with rank: 2
+Mean validation score: 0.629 (std: 0.003)
+Mean train GM accuracy: 0.649 (std: 0.001)
+Mean train weighted accuracy: 0.799 (std: 0.799)
+Parameters: {'bootstrap': False, 'class_weight': 'balanced', 'criterion': 'gini', 'max_features': 'auto', 'min_samples_leaf': 1, 'min_samples_split': 7, 'n_estimators': 837}
+
+Model with rank: 3
+Mean validation score: 0.628 (std: 0.003)
+Mean train GM accuracy: 0.648 (std: 0.001)
+Mean train weighted accuracy: 0.797 (std: 0.797)
+Parameters: {'bootstrap': False, 'class_weight': None, 'criterion': 'gini', 'max_features': 'log2', 'min_samples_leaf': 1, 'min_samples_split': 9, 'n_estimators': 967}
+
+Model with rank: 4
+Mean validation score: 0.628 (std: 0.003)
+Mean train GM accuracy: 0.648 (std: 0.001)
+Mean train weighted accuracy: 0.797 (std: 0.797)
+Parameters: {'bootstrap': True, 'class_weight': 'balanced_subsample', 'criterion': 'gini', 'max_features': 'auto', 'min_samples_leaf': 1, 'min_samples_split': 6, 'n_estimators': 798}
+
+Model with rank: 5
+Mean validation score: 0.627 (std: 0.003)
+Mean train GM accuracy: 0.647 (std: 0.001)
+Mean train weighted accuracy: 0.796 (std: 0.796)
+Parameters: {'bootstrap': True, 'class_weight': 'balanced', 'criterion': 'gini', 'max_features': 'auto', 'min_samples_leaf': 1, 'min_samples_split': 7, 'n_estimators': 972}

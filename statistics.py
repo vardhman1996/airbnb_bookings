@@ -1,11 +1,8 @@
-import pandas as pd
-import numpy as np
-import pickle as pkl
 import matplotlib as ml
 ml.use("Agg")
 import matplotlib.pyplot as plt
 import scipy.stats as stats
-from sklearn.feature_selection import chi2
+
 plt.style.use('seaborn')
 import seaborn as sns
 from settings import *

@@ -7,11 +7,8 @@ __pycache__/
 .vscode/
 data/
 metadata/
-graphs/
 processed_data/
-metrics/
-classification_report/
-imbalance_classification_report/
+.DS_Store
 
 # C extensions
 *.so
